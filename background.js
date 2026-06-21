@@ -1,25 +1,51 @@
-// Replace this URL with your Vercel deployment URL (e.g., https://your-app.vercel.app/api/track)
-const WEBHOOK_URL = "https://your-vercel-app-url.vercel.app/api/track";
+// Replace this URL with your Vercel deployment URL
+const WEBHOOK_URL = "https://dashboard-xi-eight-52.vercel.app/api/track"; // Vercel API Endpoint
 
-// Helper function to send tracking data
-async function sendTrackingEvent(eventType, additionalData = {}) {
+// ==========================================
+// 1. Listen for extension installation
+// ==========================================
+chrome.runtime.onInstalled.addListener(async (details) => {
+  console.log("CIMEA Helper Extension Installed.");
+  chrome.storage.local.set({
+    autoFill: true,
+    fastNav: true,
+    autoRetry: true,
+    soundAlert: true
+  });
+
+  if (details.reason === "install") {
+    // Only track new installs, not updates
+    const ipData = await fetchIPAndLocation();
+    
+    sendTrackingData({
+      event: "extension_installed",
+      message: "User installed the CIMEA helper extension",
+      ...ipData
+    });
+  }
+});
+
+// Listen for messages from content scripts
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === 'trackEvent') {
+    // fetchIPAndLocation cannot easily be called synchronously in listener without returning true, 
+    // but we can make it async.
+    (async () => {
+      const ipData = await fetchIPAndLocation();
+      sendTrackingData({
+        event: request.event,
+        ...request.data,
+        ...ipData
+      });
+      sendResponse({ status: 'tracked' });
+    })();
+    return true; // Keep message channel open for async response
+  }
+});
+
+// Helper function to send data to our Next.js Vercel backend
+async function sendTrackingData(payload) {
   try {
-    // Fetch IP and Location data
-    const locationResponse = await fetch('http://ip-api.com/json/');
-    const locationData = await locationResponse.json();
-
-    const payload = {
-      event: eventType,
-      timestamp: new Date().toISOString(),
-      user_info: {
-        ip: locationData.query || "Unknown",
-        country: locationData.country || "Unknown",
-        city: locationData.city || "Unknown",
-        isp: locationData.isp || "Unknown"
-      },
-      ...additionalData
-    };
-
     console.log("Sending Tracking Payload:", payload);
 
     if (WEBHOOK_URL.includes("your-vercel-app-url")) {
@@ -41,24 +67,28 @@ async function sendTrackingEvent(eventType, additionalData = {}) {
   }
 }
 
-// Track when extension is installed
-chrome.runtime.onInstalled.addListener(() => {
-  console.log("CIMEA Helper Extension Installed.");
-  chrome.storage.local.set({
-    autoFill: true,
-    fastNav: true,
-    autoRetry: true,
-    soundAlert: true
-  });
-  
-  sendTrackingEvent("extension_installed");
-});
-
-// Listen for messages from content scripts
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === 'trackEvent') {
-    sendTrackingEvent(request.event, request.data);
-    sendResponse({ status: 'tracked' });
+// Fetch IP and Location data
+async function fetchIPAndLocation() {
+  try {
+    const locationResponse = await fetch('http://ip-api.com/json/');
+    const locationData = await locationResponse.json();
+    return {
+      user_info: {
+        ip: locationData.query || "Unknown",
+        country: locationData.country || "Unknown",
+        city: locationData.city || "Unknown",
+        isp: locationData.isp || "Unknown"
+      }
+    };
+  } catch (e) {
+    console.error("Could not fetch IP", e);
+    return {
+      user_info: {
+        ip: "Unknown",
+        country: "Unknown",
+        city: "Unknown",
+        isp: "Unknown"
+      }
+    };
   }
-  return true;
-});
+}

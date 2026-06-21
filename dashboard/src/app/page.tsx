@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState } from 'react';
-import { ArrowRight, Zap, Shield, Activity, Heart, Globe } from 'lucide-react';
+import { ArrowRight, Zap, Shield, Activity, Heart, Globe, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const translations = {
   en: {
@@ -66,27 +67,32 @@ const translations = {
 type LangType = 'en' | 'bn';
 
 export default function LandingPage() {
-  const [lang, setLang] = useState<LangType>('bn'); // Defaulting to Bangla based on conversation
+  const [lang, setLang] = useState<LangType>('bn'); 
 
   const t = translations[lang];
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-50 font-sans selection:bg-emerald-500/30">
+    <div className="min-h-screen bg-[#030712] text-slate-50 font-sans selection:bg-emerald-500/30 overflow-x-hidden">
+      
+      {/* Background Ambient Glows */}
+      <div className="fixed top-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-emerald-600/20 blur-[120px] pointer-events-none"></div>
+      <div className="fixed bottom-[-20%] right-[-10%] w-[600px] h-[600px] rounded-full bg-cyan-600/10 blur-[150px] pointer-events-none"></div>
+
       {/* Navbar */}
-      <nav className="fixed w-full border-b border-slate-800/50 bg-slate-950/50 backdrop-blur-md z-50">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center font-bold">
+      <nav className="fixed w-full border-b border-slate-800/50 bg-[#030712]/70 backdrop-blur-xl z-50 transition-all duration-300">
+        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center font-bold text-slate-950 shadow-[0_0_20px_rgba(52,211,153,0.3)]">
               C
             </div>
-            <span className="font-semibold text-lg tracking-tight hidden sm:block">CIMEA Helper</span>
+            <span className="font-bold text-xl tracking-tight hidden sm:block bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">CIMEA Helper</span>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-6">
             {/* Language Selector */}
-            <div className="flex items-center bg-slate-800/50 rounded-lg p-1 border border-slate-700/50">
-              <Globe className="w-4 h-4 text-slate-400 ml-2" />
+            <div className="flex items-center bg-slate-900/80 rounded-full p-1.5 border border-slate-800 shadow-inner">
+              <Globe className="w-4 h-4 text-emerald-400 ml-2" />
               <select 
-                className="bg-transparent text-sm font-medium text-slate-200 outline-none cursor-pointer pl-1 pr-2 py-1"
+                className="bg-transparent text-sm font-semibold text-slate-200 outline-none cursor-pointer pl-2 pr-3 py-1 appearance-none"
                 value={lang}
                 onChange={(e) => setLang(e.target.value as LangType)}
               >
@@ -95,7 +101,7 @@ export default function LandingPage() {
               </select>
             </div>
             
-            <Link href="/dashboard" className="text-sm font-medium text-slate-400 hover:text-white transition-colors">
+            <Link href="/dashboard" className="text-sm font-semibold text-slate-300 hover:text-emerald-400 transition-colors">
               {t.dashboardBtn}
             </Link>
           </div>
@@ -103,60 +109,89 @@ export default function LandingPage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative pt-32 pb-20 overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-emerald-900/20 via-slate-950 to-slate-950"></div>
-        <div className="max-w-7xl mx-auto px-6 relative z-10 text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm font-medium mb-8">
-            <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            Version 1.1 Released - Free & Open
-          </div>
-          <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-8 leading-tight">
-            {t.titlePrefix} <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">{t.titleHighlight}</span>
-          </h1>
-          <p className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed">
-            {t.subtitle}
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <a href="https://github.com/cmtimran/CimeaHelperExtension/archive/refs/heads/main.zip" className="px-8 py-4 rounded-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold transition-all transform hover:scale-105 flex items-center gap-2">
-              {t.download} <ArrowRight className="w-5 h-5" />
-            </a>
+      <section className="relative pt-40 pb-20 lg:pt-48 lg:pb-32">
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
+            
+            {/* Text Content */}
+            <div className="text-center lg:text-left order-2 lg:order-1">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm font-semibold mb-8 shadow-[0_0_20px_rgba(52,211,153,0.1)]">
+                <span className="flex h-2 w-2 rounded-full bg-emerald-400 animate-ping"></span>
+                Version 1.1 Released
+              </div>
+              <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-8 leading-[1.1]">
+                {t.titlePrefix} <br className="hidden lg:block" />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-cyan-400 to-emerald-300 drop-shadow-sm">{t.titleHighlight}</span>
+              </h1>
+              <p className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto lg:mx-0 mb-10 leading-relaxed font-medium">
+                {t.subtitle}
+              </p>
+              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-5">
+                <a href="https://github.com/cmtimran/CimeaHelperExtension/archive/refs/heads/main.zip" 
+                   className="px-8 py-4 rounded-full bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-bold transition-all transform hover:-translate-y-1 hover:shadow-[0_10px_40px_rgba(52,211,153,0.4)] flex items-center gap-2 w-full sm:w-auto justify-center">
+                  {t.download} <ArrowRight className="w-5 h-5" />
+                </a>
+              </div>
+            </div>
+
+            {/* 3D Illustration */}
+            <div className="order-1 lg:order-2 flex justify-center relative">
+              <div className="absolute inset-0 bg-gradient-to-tr from-emerald-500/20 to-cyan-500/20 rounded-full blur-[80px]"></div>
+              <div className="relative w-full max-w-md lg:max-w-lg aspect-square" style={{ animation: "float 6s ease-in-out infinite" }}>
+                <Image 
+                  src="/hero_illustration.png" 
+                  alt="CIMEA Automation Illustration" 
+                  fill
+                  className="object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
+                  priority
+                />
+              </div>
+            </div>
+
           </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section className="py-24 bg-slate-900/50">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">{t.featuresTitle}</h2>
-            <p className="text-slate-400">{t.featuresSub}</p>
+      <section className="py-32 relative border-t border-slate-800/50 bg-slate-900/20">
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
+          <div className="text-center mb-20">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">{t.featuresTitle}</h2>
+            <p className="text-lg text-slate-400 font-medium">{t.featuresSub}</p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
             <FeatureCard 
-              icon={<Zap className="w-6 h-6 text-emerald-400" />}
+              icon={<Zap className="w-7 h-7 text-emerald-400" />}
               title={t.f1Title}
               desc={t.f1Desc}
+              glowColor="emerald"
             />
             <FeatureCard 
-              icon={<Activity className="w-6 h-6 text-cyan-400" />}
+              icon={<Activity className="w-7 h-7 text-cyan-400" />}
               title={t.f2Title}
               desc={t.f2Desc}
+              glowColor="cyan"
             />
             <FeatureCard 
-              icon={<Shield className="w-6 h-6 text-purple-400" />}
+              icon={<Shield className="w-7 h-7 text-purple-400" />}
               title={t.f3Title}
               desc={t.f3Desc}
+              glowColor="purple"
             />
           </div>
         </div>
       </section>
 
       {/* How it works */}
-      <section className="py-24 border-t border-slate-800/50">
-        <div className="max-w-3xl mx-auto px-6">
-          <h2 className="text-3xl font-bold mb-12 text-center">{t.installTitle}</h2>
-          <div className="space-y-8 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-800 before:to-transparent">
+      <section className="py-32 border-t border-slate-800/50">
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="text-center mb-20">
+            <h2 className="text-4xl font-bold mb-6">{t.installTitle}</h2>
+            <div className="w-24 h-1 bg-gradient-to-r from-emerald-500 to-cyan-500 mx-auto rounded-full"></div>
+          </div>
+          
+          <div className="space-y-6">
             <Step number="1" title={t.s1Title}>
               {t.s1Desc}
             </Step>
@@ -171,62 +206,76 @@ export default function LandingPage() {
       </section>
 
       {/* Support Section */}
-      <section className="py-20 bg-slate-900/30">
-        <div className="max-w-4xl mx-auto px-6 text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-rose-500/10 mb-6">
-            <Heart className="w-8 h-8 text-rose-500" />
+      <section className="py-24 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-rose-900/10"></div>
+        <div className="max-w-4xl mx-auto px-6 text-center relative z-10 bg-slate-900/40 border border-slate-800/60 backdrop-blur-xl p-12 rounded-[2.5rem] shadow-2xl">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-rose-500/10 mb-8 border border-rose-500/20 shadow-[0_0_30px_rgba(244,63,94,0.15)]">
+            <Heart className="w-10 h-10 text-rose-500 animate-pulse" />
           </div>
-          <h2 className="text-3xl font-bold mb-4">{t.supportTitle}</h2>
-          <p className="text-slate-400 mb-8 max-w-2xl mx-auto leading-relaxed">
+          <h2 className="text-4xl font-bold mb-6 text-white">{t.supportTitle}</h2>
+          <p className="text-lg text-slate-400 mb-12 max-w-2xl mx-auto leading-relaxed">
             {t.supportDesc}
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-            <div className="bg-slate-800/50 border border-rose-500/30 p-6 rounded-2xl w-full sm:w-auto hover:border-rose-500/50 transition-colors">
-              <h3 className="text-lg font-bold text-rose-400 mb-2">{t.bkashTitle}</h3>
-              <p className="text-2xl font-mono tracking-widest text-white mb-2">01X-XXXX-XXXX</p>
-              <p className="text-sm text-slate-400">{t.bkashDesc}</p>
+            <div className="bg-slate-950/50 border border-rose-500/30 p-8 rounded-3xl w-full sm:w-auto hover:border-rose-500/60 transition-all shadow-lg hover:shadow-[0_0_20px_rgba(244,63,94,0.1)] group">
+              <h3 className="text-sm font-bold text-rose-400 uppercase tracking-wider mb-3">{t.bkashTitle}</h3>
+              <p className="text-3xl font-mono tracking-widest text-white mb-2 group-hover:scale-105 transition-transform">01X-XXXX-XXXX</p>
+              <p className="text-sm text-slate-500 font-medium">{t.bkashDesc}</p>
             </div>
             
-            <a href="#" className="bg-[#FFDD00] hover:bg-[#FFEA4C] text-black p-6 rounded-2xl w-full sm:w-auto transition-transform transform hover:scale-105 flex flex-col items-center justify-center gap-2 font-bold">
-              <span className="text-xl">{t.coffeeBtn}</span>
-              <span className="text-sm font-medium opacity-80">{t.coffeeSub}</span>
+            <a href="#" className="bg-gradient-to-br from-[#FFDD00] to-[#FFC300] hover:to-[#FFD000] text-black p-8 rounded-3xl w-full sm:w-auto transition-all transform hover:-translate-y-2 hover:shadow-[0_15px_30px_rgba(255,221,0,0.2)] flex flex-col items-center justify-center gap-3 font-bold">
+              <span className="text-2xl">{t.coffeeBtn}</span>
+              <span className="text-sm font-semibold opacity-80 bg-black/10 px-3 py-1 rounded-full">{t.coffeeSub}</span>
             </a>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="py-8 text-center border-t border-slate-800/50 text-slate-500">
-        <p>© 2026 CIMEA Payment Helper V2. Developed for Automation.</p>
+      <footer className="py-10 text-center border-t border-slate-800/80 text-slate-500 bg-slate-950">
+        <p className="font-medium text-sm">© 2026 CIMEA Payment Helper V2. Developed for Automation.</p>
       </footer>
+      
+      {/* Add Floating Keyframes dynamically */}
+      <style dangerouslySetInnerHTML={{__html: `
+        @keyframes float {
+          0% { transform: translateY(0px); }
+          50% { transform: translateY(-20px); }
+          100% { transform: translateY(0px); }
+        }
+      `}} />
     </div>
   );
 }
 
-function FeatureCard({ icon, title, desc }: { icon: React.ReactNode, title: string, desc: string }) {
+function FeatureCard({ icon, title, desc, glowColor }: { icon: React.ReactNode, title: string, desc: string, glowColor: string }) {
+  const glowClasses: Record<string, string> = {
+    emerald: "group-hover:border-emerald-500/50 group-hover:shadow-[0_0_30px_rgba(52,211,153,0.1)]",
+    cyan: "group-hover:border-cyan-500/50 group-hover:shadow-[0_0_30px_rgba(34,211,238,0.1)]",
+    purple: "group-hover:border-purple-500/50 group-hover:shadow-[0_0_30px_rgba(168,85,247,0.1)]"
+  };
+
   return (
-    <div className="bg-slate-800/50 border border-slate-700/50 p-8 rounded-2xl hover:bg-slate-800 transition-colors">
-      <div className="w-12 h-12 bg-slate-900 rounded-xl flex items-center justify-center mb-6 border border-slate-700">
+    <div className={`bg-slate-900/50 border border-slate-800 p-8 rounded-[2rem] transition-all duration-300 group hover:-translate-y-2 ${glowClasses[glowColor]}`}>
+      <div className="w-16 h-16 bg-slate-950 rounded-2xl flex items-center justify-center mb-8 border border-slate-800 group-hover:scale-110 transition-transform shadow-inner">
         {icon}
       </div>
-      <h3 className="text-xl font-bold mb-3">{title}</h3>
-      <p className="text-slate-400 text-sm leading-relaxed">{desc}</p>
+      <h3 className="text-2xl font-bold mb-4 text-white group-hover:text-emerald-50 transition-colors">{title}</h3>
+      <p className="text-slate-400 text-base leading-relaxed">{desc}</p>
     </div>
   );
 }
 
 function Step({ number, title, children }: { number: string, title: string, children: React.ReactNode }) {
   return (
-    <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-      <div className="flex items-center justify-center w-10 h-10 rounded-full border border-white/10 bg-slate-900 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 text-emerald-400 font-bold z-10">
+    <div className="flex items-start gap-6 bg-slate-900/30 p-6 md:p-8 rounded-[2rem] border border-slate-800/50 hover:bg-slate-800/40 transition-colors">
+      <div className="flex items-center justify-center w-14 h-14 rounded-2xl border border-emerald-500/20 bg-emerald-500/10 text-emerald-400 font-black text-xl shrink-0 shadow-[0_0_20px_rgba(52,211,153,0.1)]">
         {number}
       </div>
-      <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-6 rounded-2xl bg-slate-800/30 border border-slate-700/50 hover:bg-slate-800/50 transition-colors">
-        <div className="flex flex-col mb-2">
-          <span className="font-bold text-lg text-slate-200">{title}</span>
-        </div>
-        <div className="text-slate-400 text-sm leading-relaxed">{children}</div>
+      <div className="flex flex-col pt-3">
+        <h3 className="font-bold text-2xl text-slate-100 mb-3">{title}</h3>
+        <p className="text-slate-400 text-lg leading-relaxed">{children}</p>
       </div>
     </div>
   );

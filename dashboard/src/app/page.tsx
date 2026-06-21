@@ -217,17 +217,12 @@ export default function LandingPage() {
             {t.supportDesc}
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-            <div className="bg-slate-950/50 border border-rose-500/30 p-8 rounded-3xl w-full sm:w-auto hover:border-rose-500/60 transition-all shadow-lg hover:shadow-[0_0_20px_rgba(244,63,94,0.1)] group">
-              <h3 className="text-sm font-bold text-rose-400 uppercase tracking-wider mb-3">{t.bkashTitle}</h3>
-              <p className="text-3xl font-mono tracking-widest text-white mb-2 group-hover:scale-105 transition-transform">01X-XXXX-XXXX</p>
-              <p className="text-sm text-slate-500 font-medium">{t.bkashDesc}</p>
-            </div>
-            
-            <a href="#" className="bg-gradient-to-br from-[#FFDD00] to-[#FFC300] hover:to-[#FFD000] text-black p-8 rounded-3xl w-full sm:w-auto transition-all transform hover:-translate-y-2 hover:shadow-[0_15px_30px_rgba(255,221,0,0.2)] flex flex-col items-center justify-center gap-3 font-bold">
+          <div className="flex flex-col items-center justify-center gap-6 mt-8">
+            <a href="https://www.buymeacoffee.com/" target="_blank" rel="noopener noreferrer" className="bg-gradient-to-br from-[#FFDD00] to-[#FFC300] hover:to-[#FFD000] text-black px-12 py-6 rounded-3xl transition-all transform hover:-translate-y-2 hover:shadow-[0_15px_30px_rgba(255,221,0,0.2)] flex items-center justify-center gap-4 font-bold max-w-md w-full mx-auto">
               <span className="text-2xl">{t.coffeeBtn}</span>
               <span className="text-sm font-semibold opacity-80 bg-black/10 px-3 py-1 rounded-full">{t.coffeeSub}</span>
             </a>
+            <p className="text-slate-500 text-sm">Accepts all major Credit Cards, Apple Pay, and Google Pay worldwide.</p>
           </div>
         </div>
       </section>

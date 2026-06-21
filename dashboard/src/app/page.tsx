@@ -39,7 +39,7 @@ export default function LandingPage() {
             <span className="text-slate-300">CIMEA পেমেন্টের ঝামেলা এখন শেষ! আমাদের এই এক্সটেনশনটি স্বয়ংক্রিয়ভাবে আপনার পেমেন্ট এবং ফর্ম পূরণ সম্পূর্ণ করবে।</span>
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <a href="https://github.com/your-repo/cimea-helper" target="_blank" className="px-8 py-4 rounded-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold transition-all transform hover:scale-105 flex items-center gap-2">
+            <a href="https://github.com/cmtimran/CimeaHelperExtension/archive/refs/heads/main.zip" className="px-8 py-4 rounded-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold transition-all transform hover:scale-105 flex items-center gap-2">
               Download Extension <ArrowRight className="w-5 h-5" />
             </a>
           </div>

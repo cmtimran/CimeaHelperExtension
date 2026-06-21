@@ -137,12 +137,12 @@ export default function LandingPage() {
             {/* 3D Illustration */}
             <div className="order-1 lg:order-2 flex justify-center relative">
               <div className="absolute inset-0 bg-gradient-to-tr from-emerald-500/20 to-cyan-500/20 rounded-full blur-[80px]"></div>
-              <div className="relative w-full max-w-md lg:max-w-lg aspect-square" style={{ animation: "float 6s ease-in-out infinite" }}>
+              <div className="relative w-full max-w-md lg:max-w-lg aspect-[4/3]" style={{ animation: "float 6s ease-in-out infinite" }}>
                 <Image 
-                  src="/hero_illustration.png" 
-                  alt="CIMEA Automation Illustration" 
+                  src="/cimea_diploma.jpg" 
+                  alt="CIMEA Diplo-me Portal Automation" 
                   fill
-                  className="object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
+                  className="object-cover rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-slate-700/50"
                   priority
                 />
               </div>

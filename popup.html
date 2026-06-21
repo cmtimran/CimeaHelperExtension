@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CIMEA Helper Tool</title>
+  <link rel="stylesheet" href="popup.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="logo-wrapper">
+        <div class="logo"></div>
+      </div>
+      <h1 class="title">CIMEA Payment Helper</h1>
+      <p class="subtitle">Free Public Version - Auto Tool</p>
+    </header>
+
+    <main class="main-content">
+      <div class="settings-group">
+        <div class="setting-item">
+          <div class="setting-info">
+            <span class="setting-label">Auto-fill Documents</span>
+            <span class="setting-desc">Automatically upload and fill standard forms.</span>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="autoFillToggle">
+            <span class="slider round"></span>
+          </label>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <span class="setting-label">Fast Navigation</span>
+            <span class="setting-desc">Auto-click 'Next' and bypass waiting screens.</span>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="fastNavToggle">
+            <span class="slider round"></span>
+          </label>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <span class="setting-label">Auto-Retry Payment</span>
+            <span class="setting-desc">Automatically try again if server fails.</span>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="autoRetryToggle">
+            <span class="slider round"></span>
+          </label>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <span class="setting-label">Success Sound Alert</span>
+            <span class="setting-desc">Play a sound when payment is successful.</span>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="soundAlertToggle">
+            <span class="slider round"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="action-section">
+        <button class="primary-btn" id="startBtn">
+          <span class="btn-icon">⚡</span>
+          Start Automation
+        </button>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <p>Developed for CIMEA Portal</p>
+    </footer>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

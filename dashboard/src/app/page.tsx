@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { ArrowRight, Zap, Shield, Activity, Heart, Globe, CheckCircle2, Bell, CreditCard, RefreshCw } from 'lucide-react';
+import { ArrowRight, Zap, Shield, Activity, Heart, Globe, CheckCircle2, Bell, CreditCard, RefreshCw, Layers, Gauge, Volume2, Timer } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -25,6 +25,14 @@ const translations = {
     f5Desc: "Save your card locally and it will fill the checkout page in 1ms to save you precious time.",
     f6Title: "502 Crash Recovery",
     f6Desc: "If the CIMEA server crashes and shows a 502 Error, it automatically refreshes the page until it works.",
+    f7Title: "Multi-Tab Sync",
+    f7Desc: "Run the bot on multiple tabs. If one succeeds, the rest pause automatically to prevent double charging.",
+    f8Title: "Speed Controller",
+    f8Desc: "Adjust the bot's speed from Ultra Fast to Safe based on your internet connection.",
+    f9Title: "Nexi Payment Alarm",
+    f9Desc: "Plays a continuous loud beep when you reach the Nexi payment gateway so you don't miss it.",
+    f10Title: "Session Keep-Alive",
+    f10Desc: "Pings the CIMEA server every 5 minutes in the background so you never get logged out while waiting.",
     installTitle: "How to Install",
     s1Title: "Download & Unzip",
     s1Desc: "Download the extension files from the source and extract the folder to your desktop.",
@@ -59,6 +67,14 @@ const translations = {
     f5Desc: "পেমেন্ট পেজে আসার সাথে সাথেই আপনার কার্ডের তথ্য নিজে থেকেই ফর্মের বক্সে বসিয়ে দিবে।",
     f6Title: "502 ক্র্যাশ রিকভারি",
     f6Desc: "সার্ভার ডাউন বা 502 Error আসলে নিজে থেকেই পেজ রিফ্রেশ করে আবার কাজ শুরু করবে।",
+    f7Title: "মাল্টি-ট্যাব সিঙ্ক",
+    f7Desc: "একাধিক ট্যাবে বট চালালে, একটিতে পেমেন্ট হওয়ামাত্রই বাকিগুলো পজ হয়ে যাবে যাতে ভুলে ডাবল পেমেন্ট না হয়।",
+    f8Title: "স্পিড কন্ট্রোলার",
+    f8Desc: "আপনার ইন্টারনেটের স্পিড অনুযায়ী বটের কাজ করার গতি কমানো বা বাড়ানো যাবে।",
+    f9Title: "নেক্সি পেমেন্ট অ্যালার্ম",
+    f9Desc: "নেক্সি পেমেন্ট পেজ আসার সাথে সাথেই বারবার বিপ সাউন্ড করে আপনাকে অ্যালার্ট করে দিবে।",
+    f10Title: "সেশন কিপ-অ্যালাইভ",
+    f10Desc: "সার্ভারে বসে থাকার সময় ৫ মিনিট পরপর পিং করে আপনার সেশন ধরে রাখবে, যাতে লগ-আউট না হয়ে যায়।",
     installTitle: "কীভাবে ইন্সটল করবেন",
     s1Title: "ডাউনলোড ও আনজিপ করুন",
     s1Desc: "এক্সটেনশন ফাইলটি ডাউনলোড করে আপনার ডেস্কটপে আনজিপ (Extract) করুন।",
@@ -208,6 +224,30 @@ export default function LandingPage() {
               desc={t.f3Desc}
               glowColor="purple"
             />
+            <FeatureCard 
+              icon={<Layers className="w-7 h-7 text-indigo-400" />}
+              title={t.f7Title}
+              desc={t.f7Desc}
+              glowColor="indigo"
+            />
+            <FeatureCard 
+              icon={<Gauge className="w-7 h-7 text-pink-400" />}
+              title={t.f8Title}
+              desc={t.f8Desc}
+              glowColor="pink"
+            />
+            <FeatureCard 
+              icon={<Volume2 className="w-7 h-7 text-orange-400" />}
+              title={t.f9Title}
+              desc={t.f9Desc}
+              glowColor="orange"
+            />
+            <FeatureCard 
+              icon={<Timer className="w-7 h-7 text-teal-400" />}
+              title={t.f10Title}
+              desc={t.f10Desc}
+              glowColor="teal"
+            />
           </div>
         </div>
       </section>
@@ -289,7 +329,11 @@ function FeatureCard({ icon, title, desc, glowColor }: { icon: React.ReactNode, 
     yellow: "group-hover:border-yellow-500/50 group-hover:shadow-[0_0_30px_rgba(250,204,21,0.1)]",
     blue: "group-hover:border-blue-500/50 group-hover:shadow-[0_0_30px_rgba(59,130,246,0.1)]",
     red: "group-hover:border-rose-500/50 group-hover:shadow-[0_0_30px_rgba(244,63,94,0.1)]",
-    purple: "group-hover:border-purple-500/50 group-hover:shadow-[0_0_30px_rgba(168,85,247,0.1)]"
+    purple: "group-hover:border-purple-500/50 group-hover:shadow-[0_0_30px_rgba(168,85,247,0.1)]",
+    indigo: "group-hover:border-indigo-500/50 group-hover:shadow-[0_0_30px_rgba(99,102,241,0.1)]",
+    pink: "group-hover:border-pink-500/50 group-hover:shadow-[0_0_30px_rgba(236,72,153,0.1)]",
+    orange: "group-hover:border-orange-500/50 group-hover:shadow-[0_0_30px_rgba(249,115,22,0.1)]",
+    teal: "group-hover:border-teal-500/50 group-hover:shadow-[0_0_30px_rgba(20,184,166,0.1)]"
   };
 
   return (

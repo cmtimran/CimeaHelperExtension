@@ -30,8 +30,8 @@ const translations = {
     supportDesc: "This extension is 100% free for everyone. If this tool saved you time and money, consider supporting the developer!",
     bkashTitle: "bKash / Nagad (Personal)",
     bkashDesc: "Send Money / Cash In",
-    coffeeBtn: "Buy me a Coffee",
-    coffeeSub: "PayPal / Card",
+    coffeeBtn: "Donate via Card",
+    coffeeSub: "Powered by Stripe",
     dashboardBtn: "Owner Dashboard"
   },
   bn: {
@@ -58,8 +58,8 @@ const translations = {
     supportDesc: "এই টুলটি সম্পূর্ণ ফ্রী! যদি এটি আপনার সময় ও টাকা বাঁচিয়ে থাকে, তবে আপনি চাইলে ডেভেলপারকে কিছু ডোনেট করতে পারেন।",
     bkashTitle: "বিকাশ / নগদ (পার্সোনাল)",
     bkashDesc: "সেন্ড মানি / ক্যাশ ইন",
-    coffeeBtn: "কফি কিনে দিন",
-    coffeeSub: "পেপ্যাল / কার্ড",
+    coffeeBtn: "কার্ড দিয়ে পেমেন্ট করুন",
+    coffeeSub: "Stripe পেমেন্ট",
     dashboardBtn: "ওনার ড্যাশবোর্ড"
   }
 };
@@ -218,9 +218,9 @@ export default function LandingPage() {
           </p>
 
           <div className="flex flex-col items-center justify-center gap-6 mt-8">
-            <a href="https://buymeacoffee.com/mdimranhosf" target="_blank" rel="noopener noreferrer" className="bg-gradient-to-br from-[#FFDD00] to-[#FFC300] hover:to-[#FFD000] text-black px-12 py-6 rounded-3xl transition-all transform hover:-translate-y-2 hover:shadow-[0_15px_30px_rgba(255,221,0,0.2)] flex items-center justify-center gap-4 font-bold max-w-md w-full mx-auto">
+            <a href="#" target="_blank" rel="noopener noreferrer" className="bg-gradient-to-br from-[#635BFF] to-[#4338CA] hover:to-[#312E81] text-white px-12 py-6 rounded-3xl transition-all transform hover:-translate-y-2 hover:shadow-[0_15px_30px_rgba(99,91,255,0.3)] flex items-center justify-center gap-4 font-bold max-w-md w-full mx-auto">
               <span className="text-2xl">{t.coffeeBtn}</span>
-              <span className="text-sm font-semibold opacity-80 bg-black/10 px-3 py-1 rounded-full">{t.coffeeSub}</span>
+              <span className="text-sm font-semibold opacity-90 bg-white/20 px-3 py-1 rounded-full">{t.coffeeSub}</span>
             </a>
             <p className="text-slate-500 text-sm">Accepts all major Credit Cards, Apple Pay, and Google Pay worldwide.</p>
           </div>

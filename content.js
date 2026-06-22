@@ -76,7 +76,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 // ---------------------------------------------------------
 // 3. Automated Observers (The Loop)
 // ---------------------------------------------------------
-const observer = new MutationObserver(() => {
+
+function checkPageState() {
   if (isNavigating) return;
   const pageText = document.body.innerText.toLowerCase();
 
@@ -99,6 +100,13 @@ const observer = new MutationObserver(() => {
     logToDrawer("Step 2: Daily limit reached error detected! Navigating to Home...");
     isNavigating = true;
     window.location.hash = '#/home';
+    
+    // Fallback: If hash change doesn't work, click the Homepage link
+    setTimeout(() => {
+       const homeLink = Array.from(document.querySelectorAll('a')).find(el => el.innerText.toLowerCase().includes('homepage'));
+       if (homeLink) homeLink.click();
+    }, 1000);
+
     setTimeout(() => { isNavigating = false; }, 3000);
     return;
   }
@@ -152,11 +160,17 @@ const observer = new MutationObserver(() => {
     });
     chrome.runtime.sendMessage({ action: 'trackEvent', event: 'payment_success' });
     logToDrawer("🎉 PAYMENT SUCCESSFUL! Stopping loop.");
-    observer.disconnect();
+    if (observer) observer.disconnect();
   }
-});
+}
 
+const observer = new MutationObserver(checkPageState);
 observer.observe(document.body, { childList: true, subtree: true });
+
+// Run once immediately on load
+setTimeout(checkPageState, 1000);
+setInterval(checkPageState, 2000); // Failsafe interval just in case DOM doesn't mutate
+
 
 // Play success sound
 function playSound() {

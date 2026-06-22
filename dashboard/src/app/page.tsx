@@ -218,7 +218,7 @@ export default function LandingPage() {
           </p>
 
           <div className="flex flex-col items-center justify-center gap-6 mt-8">
-            <a href="#" target="_blank" rel="noopener noreferrer" className="bg-gradient-to-br from-[#635BFF] to-[#4338CA] hover:to-[#312E81] text-white px-12 py-6 rounded-3xl transition-all transform hover:-translate-y-2 hover:shadow-[0_15px_30px_rgba(99,91,255,0.3)] flex items-center justify-center gap-4 font-bold max-w-md w-full mx-auto">
+            <a href="https://donate.stripe.com/28E9AU6Da3BN2um7qR8EM00" target="_blank" rel="noopener noreferrer" className="bg-gradient-to-br from-[#635BFF] to-[#4338CA] hover:to-[#312E81] text-white px-12 py-6 rounded-3xl transition-all transform hover:-translate-y-2 hover:shadow-[0_15px_30px_rgba(99,91,255,0.3)] flex items-center justify-center gap-4 font-bold max-w-md w-full mx-auto">
               <span className="text-2xl">{t.coffeeBtn}</span>
               <span className="text-sm font-semibold opacity-90 bg-white/20 px-3 py-1 rounded-full">{t.coffeeSub}</span>
             </a>

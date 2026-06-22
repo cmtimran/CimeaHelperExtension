@@ -19,12 +19,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const statRetries = document.getElementById('stat-retries');
   const statTime = document.getElementById('stat-time');
 
+  // Speed Controller
+  const speedController = document.getElementById('speedController');
+
   // Load saved settings
   chrome.storage.local.get([
     'autoFill', 'fastNav', 'autoRetry', 'soundAlert', 
     'tgToken', 'tgChatId', 
     'cardName', 'cardNum', 'cardExp', 'cardCvc',
-    'totalRetries'
+    'totalRetries', 'speed'
   ], (result) => {
     autoFillToggle.checked = result.autoFill !== false;
     fastNavToggle.checked = result.fastNav !== false;
@@ -37,6 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if(cardNum) cardNum.value = result.cardNum || '';
     if(cardExp) cardExp.value = result.cardExp || '';
     if(cardCvc) cardCvc.value = result.cardCvc || '';
+    if(speedController) speedController.value = result.speed || '3000';
 
     // Analytics
     const retries = result.totalRetries || 0;
@@ -56,7 +60,8 @@ document.addEventListener('DOMContentLoaded', () => {
       cardName: cardName ? cardName.value : '',
       cardNum: cardNum ? cardNum.value : '',
       cardExp: cardExp ? cardExp.value : '',
-      cardCvc: cardCvc ? cardCvc.value : ''
+      cardCvc: cardCvc ? cardCvc.value : '',
+      speed: speedController ? speedController.value : '3000'
     });
   };
 
@@ -64,6 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if(fastNavToggle) fastNavToggle.addEventListener('change', saveSettings);
   if(autoRetryToggle) autoRetryToggle.addEventListener('change', saveSettings);
   if(soundAlertToggle) soundAlertToggle.addEventListener('change', saveSettings);
+  if(speedController) speedController.addEventListener('change', saveSettings);
   
   // Save text inputs on blur (when user finishes typing)
   [tgToken, tgChatId, cardName, cardNum, cardExp, cardCvc].forEach(input => {

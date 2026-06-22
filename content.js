@@ -6,6 +6,34 @@ let isNavigating = false;
 let isPaused = false; // Global pause state
 
 // ---------------------------------------------------------
+// Global Config & Sync Listeners
+// ---------------------------------------------------------
+let actionDelay = 3000;
+chrome.storage.local.get(['speed'], (res) => {
+    if(res.speed) actionDelay = parseInt(res.speed);
+});
+
+chrome.storage.onChanged.addListener((changes, area) => {
+    if (area === 'local') {
+        if (changes.speed) actionDelay = parseInt(changes.speed.newValue);
+        if (changes.paymentSucceeded && changes.paymentSucceeded.newValue === true) {
+            if (!isPaused && window.location.hostname.includes('cimea-diplome.it')) {
+                const pauseBtn = document.getElementById('cimea-pause-btn');
+                if (pauseBtn) pauseBtn.click();
+                logToDrawer("⏸️ Auto-Paused: Payment succeeded in another tab.");
+            }
+        }
+    }
+});
+
+// Session Keep-Alive
+setInterval(() => {
+    if (!isPaused && window.location.hostname.includes('cimea-diplome.it')) {
+        fetch('/').catch(() => {});
+    }
+}, 300000); // 5 minutes
+
+// ---------------------------------------------------------
 // 1. Drawer UI Logic
 // ---------------------------------------------------------
 function injectDrawer() {
@@ -184,7 +212,7 @@ function checkPageState() {
           window.location.hash = '#/';
       }
 
-      setTimeout(() => { isNavigating = false; }, 3000);
+      setTimeout(() => { isNavigating = false; }, actionDelay);
       return;
     }
 
@@ -202,7 +230,7 @@ function checkPageState() {
            chrome.storage.local.set({ totalRetries: (res.totalRetries || 0) + 1 });
        });
 
-       setTimeout(() => { isNavigating = false; }, 3000);
+       setTimeout(() => { isNavigating = false; }, actionDelay);
        return;
     }
   }
@@ -231,7 +259,7 @@ function checkPageState() {
                 logToDrawer("Step 4: Clicking 'Complete'...");
                 isNavigating = true;
                 completeOption.click();
-                setTimeout(() => { isNavigating = false; }, 3000);
+                setTimeout(() => { isNavigating = false; }, actionDelay);
                 return;
             } else if (actionBtn && actionBtn.offsetParent !== null) {
                 logToDrawer("Step 3: On Homepage. Opening Draft menu...");
@@ -291,6 +319,25 @@ function checkPageState() {
   }
 
   // ----------------------------------------------------------------------
+  // CONTEXT 5: NEXI PAYMENT PAGE BEEP ALARM
+  // ----------------------------------------------------------------------
+  if (window.location.hostname.includes('nexi.it')) {
+      if (!window.cimeaNexiBeeperActive) {
+          window.cimeaNexiBeeperActive = true;
+          logToDrawer("💳 Nexi Payment Page Detected! Please complete the payment.");
+          
+          setInterval(() => {
+              chrome.storage.local.get(['soundAlert'], (result) => {
+                  if (result.soundAlert !== false) {
+                      playSound();
+                  }
+              });
+          }, 1500);
+      }
+      return;
+  }
+
+  // ----------------------------------------------------------------------
   // SUCCESS DETECTION
   // ----------------------------------------------------------------------
   if (pageText.includes('payment successful') || pageText.includes('pagamento riuscito') || pageText.includes('payment completed')) {
@@ -300,7 +347,7 @@ function checkPageState() {
       }
       if (!result.successAlertSent) {
         sendTelegramMessage("🎉 CIMEA Payment was SUCCESSFUL!");
-        chrome.storage.local.set({ successAlertSent: true }); // Prevent spam
+        chrome.storage.local.set({ successAlertSent: true, paymentSucceeded: true }); // Prevent spam & pause others
       }
     });
     chrome.runtime.sendMessage({ action: 'trackEvent', event: 'payment_success' });

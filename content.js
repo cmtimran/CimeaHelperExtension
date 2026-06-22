@@ -80,56 +80,57 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 function checkPageState() {
   if (isNavigating) return;
   const pageText = document.body.innerText.toLowerCase();
+  const currentHash = window.location.hash.toLowerCase();
 
-  // ----- Step 1: Click "Save and next" on Payment/Billing page -----
-  if (pageText.includes('billing address') || pageText.includes('processing time') || pageText.includes('purchase a service')) {
+  // ----------------------------------------------------------------------
+  // CONTEXT 1: PAYMENT / SERVICE PAGE
+  // ----------------------------------------------------------------------
+  if (currentHash.includes('#/service') || currentHash.includes('#/request') || pageText.includes('billing address') || pageText.includes('purchase a service')) {
+    
+    // Check for Error First
+    if (pageText.includes('the maximum limit of daily requests has been reached') || pageText.includes('il limite massimo di richieste giornaliere è stato raggiunto')) {
+      logToDrawer("Step 2: Daily limit reached! Navigating to Home...");
+      isNavigating = true;
+      
+      const homeLink = Array.from(document.querySelectorAll('a, div, span, li')).find(el => el.innerText.trim().toLowerCase() === 'homepage' || el.innerText.trim().toLowerCase() === 'home');
+      if (homeLink) {
+          homeLink.click();
+      } else {
+          window.location.hash = '#/';
+      }
+
+      setTimeout(() => { isNavigating = false; }, 3000);
+      return;
+    }
+
+    // If no error, try to submit
     const saveNextBtn = Array.from(document.querySelectorAll('button')).find(el => 
        el.innerText.toLowerCase().includes('save and next') || el.innerText.toLowerCase().includes('salva e continua')
     );
     if (saveNextBtn && !saveNextBtn.disabled && saveNextBtn.offsetParent !== null) {
-       logToDrawer("Step 1: Found 'Save and next'. Clicking...");
+       logToDrawer("Step 1: On Payment Page. Clicking 'Save and next'...");
        isNavigating = true;
        saveNextBtn.click();
-       setTimeout(() => { isNavigating = false; }, 3000); // Throttle
+       setTimeout(() => { isNavigating = false; }, 3000);
        return;
     }
   }
 
-  // ----- Step 2: Daily Limit Reached -> Go to Home -----
-  if (pageText.includes('the maximum limit of daily requests has been reached') || pageText.includes('il limite massimo di richieste giornaliere è stato raggiunto')) {
-    logToDrawer("Step 2: Daily limit reached error detected! Navigating to Home...");
-    isNavigating = true;
-    
-    // Prioritize clicking the Homepage link so the SPA router handles it cleanly
-    const homeLink = Array.from(document.querySelectorAll('a, div, span, li')).find(el => el.innerText.trim().toLowerCase() === 'homepage' || el.innerText.trim().toLowerCase() === 'home');
-    if (homeLink) {
-        homeLink.click();
-    } else {
-        window.location.hash = '#/';
-    }
-
-    setTimeout(() => { isNavigating = false; }, 3000);
-    return;
-  }
-
-  // ----- Step 3 & 4: On Home Page -> Click 3 dots -> Click Complete -----
-  if (window.location.hash.includes('home') || window.location.hash === '#/' || pageText.includes('your requests')) {
+  // ----------------------------------------------------------------------
+  // CONTEXT 2: HOMEPAGE (DASHBOARD)
+  // ----------------------------------------------------------------------
+  if (currentHash === '#/' || currentHash.includes('#/home') || pageText.includes('my requests')) {
     const draftBadge = Array.from(document.querySelectorAll('*')).find(el => 
         el.innerText.trim().toLowerCase() === 'draft' || el.innerText.trim().toLowerCase() === 'bozza'
     );
     
     if (draftBadge && draftBadge.offsetParent !== null) {
-        // Find parent row
         const row = draftBadge.closest('tr') || draftBadge.closest('div.row') || draftBadge.parentElement.parentElement;
         if (row) {
-            // Find action menu button (usually the last button in the row or contains ...)
             const btns = row.querySelectorAll('button, [role="button"]');
             let actionBtn = Array.from(btns).find(btn => btn.innerText.includes('...'));
-            if (!actionBtn && btns.length > 0) {
-               actionBtn = btns[btns.length - 1]; // Fallback to last button
-            }
+            if (!actionBtn && btns.length > 0) actionBtn = btns[btns.length - 1];
 
-            // Check if dropdown is already open by looking for 'Complete' text
             const completeOption = Array.from(document.querySelectorAll('button, a, div, span, li')).find(el => 
                 (el.innerText.toLowerCase().includes('complete') || el.innerText.toLowerCase().includes('completa')) && 
                 el.offsetParent !== null && !el.innerText.toLowerCase().includes('completed')
@@ -142,10 +143,10 @@ function checkPageState() {
                 setTimeout(() => { isNavigating = false; }, 3000);
                 return;
             } else if (actionBtn && actionBtn.offsetParent !== null) {
-                logToDrawer("Step 3: Found Draft request. Opening action menu (...)");
+                logToDrawer("Step 3: On Homepage. Opening Draft menu...");
                 isNavigating = true;
                 actionBtn.click();
-                setTimeout(() => { isNavigating = false; }, 1500); // Wait for menu to open
+                setTimeout(() => { isNavigating = false; }, 1500);
                 return;
             }
         }

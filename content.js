@@ -12,24 +12,54 @@ function injectDrawer() {
   if (document.getElementById('cimea-helper-drawer')) return;
   const drawer = document.createElement('div');
   drawer.id = 'cimea-helper-drawer';
-  drawer.style.cssText = 'position: fixed; right: 0; top: 0; height: 100vh; width: 300px; background: #0f172a; color: #f8fafc; z-index: 999999; padding: 20px; box-shadow: -5px 0 15px rgba(0,0,0,0.5); font-family: sans-serif; overflow-y: auto; transition: transform 0.3s ease; box-sizing: border-box;';
+  drawer.style.cssText = 'position: fixed; bottom: 30px; right: 30px; width: 320px; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; color: #f8fafc; z-index: 999999; padding: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.4); font-family: "Segoe UI", system-ui, sans-serif; display: flex; flex-direction: column; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-sizing: border-box; overflow: hidden;';
+  
   drawer.innerHTML = `
-    <h2 style="font-size: 16px; margin: 0 0 15px 0; border-bottom: 1px solid #334155; padding-bottom: 10px; display: flex; align-items: center; gap: 8px; font-weight: 600;">
-      <span id="cimea-status-indicator" style="display: inline-block; width: 10px; height: 10px; background: #10b981; border-radius: 50%; box-shadow: 0 0 8px #10b981; transition: background 0.3s;"></span>
-      CIMEA Helper Live
-    </h2>
-    <div style="margin-bottom: 15px; display: flex; gap: 10px;">
-      <button id="cimea-pause-btn" style="flex: 1; padding: 10px; background: #ef4444; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: background 0.2s;">Pause Automation</button>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">
+      <h2 style="font-size: 15px; margin: 0; display: flex; align-items: center; gap: 8px; font-weight: 600;">
+        <span id="cimea-status-indicator" style="display: inline-block; width: 10px; height: 10px; background: #10b981; border-radius: 50%; box-shadow: 0 0 8px #10b981; transition: background 0.3s;"></span>
+        CIMEA Helper
+      </h2>
+      <button id="cimea-toggle-btn" style="background: transparent; border: none; color: #94a3b8; cursor: pointer; font-size: 18px; padding: 0 5px; line-height: 1;">−</button>
     </div>
-    <div id="cimea-log-container" style="display: flex; flex-direction: column; gap: 10px; font-size: 13px;"></div>
+    
+    <div id="cimea-drawer-content" style="display: flex; flex-direction: column; transition: max-height 0.3s ease;">
+      <div style="margin-bottom: 12px; display: flex;">
+        <button id="cimea-pause-btn" style="flex: 1; padding: 8px; background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid rgba(239,68,68,0.3); border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; transition: all 0.2s;">Pause Automation</button>
+      </div>
+      <div id="cimea-log-container" style="display: flex; flex-direction: column; gap: 8px; font-size: 12px; max-height: 250px; overflow-y: auto; padding-right: 5px;"></div>
+    </div>
   `;
   document.body.appendChild(drawer);
 
-  // Inject CSS for animation
+  // Inject CSS for animation and custom scrollbar
   const style = document.createElement('style');
-  style.textContent = `@keyframes cimeaFadeIn { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
-                       #cimea-pause-btn:hover { opacity: 0.9; }`;
+  style.textContent = `
+    @keyframes cimeaFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    #cimea-pause-btn:hover { background: rgba(239, 68, 68, 0.4) !important; }
+    #cimea-log-container::-webkit-scrollbar { width: 4px; }
+    #cimea-log-container::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 4px; }
+    #cimea-log-container::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+  `;
   document.head.appendChild(style);
+
+  // Toggle Minimize/Maximize logic
+  let isMinimized = false;
+  document.getElementById('cimea-toggle-btn').addEventListener('click', (e) => {
+    isMinimized = !isMinimized;
+    const content = document.getElementById('cimea-drawer-content');
+    if (isMinimized) {
+      content.style.display = 'none';
+      e.target.innerText = '+';
+      drawer.style.width = '180px';
+      drawer.style.padding = '12px 16px';
+    } else {
+      content.style.display = 'flex';
+      e.target.innerText = '−';
+      drawer.style.width = '320px';
+      drawer.style.padding = '16px';
+    }
+  });
 
   // Pause button logic
   document.getElementById('cimea-pause-btn').addEventListener('click', (e) => {
@@ -38,13 +68,17 @@ function injectDrawer() {
     const indicator = document.getElementById('cimea-status-indicator');
     if (isPaused) {
       btn.innerText = "Resume Automation";
-      btn.style.background = "#10b981"; // Green to resume
+      btn.style.background = "rgba(16, 185, 129, 0.2)"; // Green tint
+      btn.style.color = "#6ee7b7";
+      btn.style.borderColor = "rgba(16, 185, 129, 0.3)";
       indicator.style.background = "#ef4444";
       indicator.style.boxShadow = "0 0 8px #ef4444";
       logToDrawer("⏸️ Automation Paused.");
     } else {
       btn.innerText = "Pause Automation";
-      btn.style.background = "#ef4444"; // Red to pause
+      btn.style.background = "rgba(239, 68, 68, 0.2)"; // Red tint
+      btn.style.color = "#fca5a5";
+      btn.style.borderColor = "rgba(239, 68, 68, 0.3)";
       indicator.style.background = "#10b981";
       indicator.style.boxShadow = "0 0 8px #10b981";
       logToDrawer("▶️ Automation Resumed.");

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { ArrowRight, Zap, Shield, Activity, Heart, Globe, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, Zap, Shield, Activity, Heart, Globe, CheckCircle2, Bell, CreditCard, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -19,6 +19,12 @@ const translations = {
     f2Desc: "Server crashed? The extension will detect the failure and automatically click the retry button for you.",
     f3Title: "No Login Required",
     f3Desc: "100% Free and Public. No license keys, no accounts, and no passwords required to use.",
+    f4Title: "Telegram Notifications",
+    f4Desc: "Receive instant Telegram messages on your mobile when payment succeeds.",
+    f5Title: "Auto-Fill Card Details",
+    f5Desc: "Save your card locally and it will fill the checkout page in 1ms to save you precious time.",
+    f6Title: "502 Crash Recovery",
+    f6Desc: "If the CIMEA server crashes and shows a 502 Error, it automatically refreshes the page until it works.",
     installTitle: "How to Install",
     s1Title: "Download & Unzip",
     s1Desc: "Download the extension files from the source and extract the folder to your desktop.",
@@ -47,6 +53,12 @@ const translations = {
     f2Desc: "সার্ভার সমস্যার কারণে পেমেন্ট ফেইল হলে, এটি স্বয়ংক্রিয়ভাবে ২ সেকেন্ড পর আবার চেষ্টা (Retry) করবে।",
     f3Title: "লগইন প্রয়োজন নেই",
     f3Desc: "এটি ব্যবহার করতে কোনো লাইসেন্স কি, আইডি বা পাসওয়ার্ডের প্রয়োজন নেই। সবার জন্য সম্পূর্ণ ফ্রী!",
+    f4Title: "টেলিগ্রাম নোটিফিকেশন",
+    f4Desc: "পেমেন্ট সফল হওয়ার সাথে সাথেই আপনার মোবাইলে টেলিগ্রাম মেসেজ চলে যাবে।",
+    f5Title: "অটো-ফিল কার্ড",
+    f5Desc: "পেমেন্ট পেজে আসার সাথে সাথেই আপনার কার্ডের তথ্য নিজে থেকেই ফর্মের বক্সে বসিয়ে দিবে।",
+    f6Title: "502 ক্র্যাশ রিকভারি",
+    f6Desc: "সার্ভার ডাউন বা 502 Error আসলে নিজে থেকেই পেজ রিফ্রেশ করে আবার কাজ শুরু করবে।",
     installTitle: "কীভাবে ইন্সটল করবেন",
     s1Title: "ডাউনলোড ও আনজিপ করুন",
     s1Desc: "এক্সটেনশন ফাইলটি ডাউনলোড করে আপনার ডেস্কটপে আনজিপ (Extract) করুন।",
@@ -173,6 +185,24 @@ export default function LandingPage() {
               glowColor="cyan"
             />
             <FeatureCard 
+              icon={<Bell className="w-7 h-7 text-yellow-400" />}
+              title={t.f4Title}
+              desc={t.f4Desc}
+              glowColor="yellow"
+            />
+            <FeatureCard 
+              icon={<CreditCard className="w-7 h-7 text-blue-400" />}
+              title={t.f5Title}
+              desc={t.f5Desc}
+              glowColor="blue"
+            />
+            <FeatureCard 
+              icon={<RefreshCw className="w-7 h-7 text-rose-400" />}
+              title={t.f6Title}
+              desc={t.f6Desc}
+              glowColor="red"
+            />
+            <FeatureCard 
               icon={<Shield className="w-7 h-7 text-purple-400" />}
               title={t.f3Title}
               desc={t.f3Desc}
@@ -256,6 +286,9 @@ function FeatureCard({ icon, title, desc, glowColor }: { icon: React.ReactNode, 
   const glowClasses: Record<string, string> = {
     emerald: "group-hover:border-emerald-500/50 group-hover:shadow-[0_0_30px_rgba(52,211,153,0.1)]",
     cyan: "group-hover:border-cyan-500/50 group-hover:shadow-[0_0_30px_rgba(34,211,238,0.1)]",
+    yellow: "group-hover:border-yellow-500/50 group-hover:shadow-[0_0_30px_rgba(250,204,21,0.1)]",
+    blue: "group-hover:border-blue-500/50 group-hover:shadow-[0_0_30px_rgba(59,130,246,0.1)]",
+    red: "group-hover:border-rose-500/50 group-hover:shadow-[0_0_30px_rgba(244,63,94,0.1)]",
     purple: "group-hover:border-purple-500/50 group-hover:shadow-[0_0_30px_rgba(168,85,247,0.1)]"
   };
 

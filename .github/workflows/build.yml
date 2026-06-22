@@ -1,0 +1,50 @@
+name: Build Secure Extension
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'background.js'
+      - 'content.js'
+      - 'popup.js'
+      - 'manifest.json'
+      - 'build.js'
+      - 'package.json'
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run Build (Obfuscate & Zip)
+        run: node build.js
+
+      - name: Update Latest Release Tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -f latest
+          git push origin -f latest
+
+      - name: Create or Update Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: latest
+          name: Latest Secure Build
+          files: cimea-helper-secure.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

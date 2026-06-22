@@ -127,9 +127,8 @@ export default function LandingPage() {
                 {t.subtitle}
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-5">
-                <a href="https://github.com/cmtimran/CimeaHelperExtension/archive/refs/heads/main.zip" 
-                   className="px-8 py-4 rounded-full bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-bold transition-all transform hover:-translate-y-1 hover:shadow-[0_10px_40px_rgba(52,211,153,0.4)] flex items-center gap-2 w-full sm:w-auto justify-center">
-                  {t.download} <ArrowRight className="w-5 h-5" />
+                <a href="https://github.com/cmtimran/CimeaHelperExtension/releases/download/latest/cimea-helper-secure.zip" className="w-full sm:w-auto px-8 py-4 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full font-bold transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(16,185,129,0.3)] flex items-center justify-center gap-2">
+                  <span className="text-lg">{t.download}</span> <ArrowRight className="w-5 h-5" />
                 </a>
               </div>
             </div>

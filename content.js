@@ -139,6 +139,19 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 // 3. Automated Observers (The Loop)
 // ---------------------------------------------------------
 
+// Telegram notification helper
+function sendTelegramMessage(text) {
+  chrome.storage.local.get(['tgToken', 'tgChatId'], (res) => {
+     if(res.tgToken && res.tgChatId) {
+        fetch(`https://api.telegram.org/bot${res.tgToken}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chat_id: res.tgChatId, text: text })
+        }).catch(e => console.log("Telegram Error:", e));
+     }
+  });
+}
+
 function checkPageState() {
   if (isNavigating || isPaused) return;
   const pageText = document.body.innerText.toLowerCase();
@@ -183,6 +196,12 @@ function checkPageState() {
        logToDrawer("Step 1: On Payment Page. Clicking 'Save and next'...");
        isNavigating = true;
        saveNextBtn.click();
+       
+       // Track analytics
+       chrome.storage.local.get(['totalRetries'], (res) => {
+           chrome.storage.local.set({ totalRetries: (res.totalRetries || 0) + 1 });
+       });
+
        setTimeout(() => { isNavigating = false; }, 3000);
        return;
     }
@@ -242,12 +261,46 @@ function checkPageState() {
   }
 
   // ----------------------------------------------------------------------
+  // CONTEXT 4: AUTO-FILL CARD (STRIPE/NEXI FRAME OR PAGE)
+  // ----------------------------------------------------------------------
+  // Look for card inputs. If found, we are on the payment gateway
+  const ccNumInput = document.querySelector('input[name="cardnumber"], input[autocomplete="cc-number"], input[name="pan"], input[type="tel"]');
+  if (ccNumInput && !ccNumInput.hasAttribute('data-cimea-filled')) {
+      chrome.storage.local.get(['cardName', 'cardNum', 'cardExp', 'cardCvc'], (res) => {
+          if (res.cardNum) {
+              logToDrawer("💳 Payment gateway detected! Auto-filling card details...");
+              
+              // Helper to set value and trigger events
+              const fillNative = (selector, val) => {
+                  const el = document.querySelector(selector);
+                  if (el && val) {
+                      el.value = val;
+                      el.dispatchEvent(new Event('input', { bubbles: true }));
+                      el.dispatchEvent(new Event('change', { bubbles: true }));
+                  }
+              };
+              
+              fillNative('input[name="cardnumber"], input[autocomplete="cc-number"], input[name="pan"], input[type="tel"]', res.cardNum);
+              fillNative('input[autocomplete="cc-name"], input[name="name"], input[name="cardholderName"]', res.cardName);
+              fillNative('input[autocomplete="cc-csc"], input[name="cvc"], input[name="cvv"]', res.cardCvc);
+              fillNative('input[autocomplete="cc-exp"], input[name="exp-date"], input[name="expiry"]', res.cardExp);
+              
+              ccNumInput.setAttribute('data-cimea-filled', 'true');
+          }
+      });
+  }
+
+  // ----------------------------------------------------------------------
   // SUCCESS DETECTION
   // ----------------------------------------------------------------------
-  if (pageText.includes('payment successful') || pageText.includes('pagamento riuscito')) {
-    chrome.storage.local.get(['soundAlert'], (result) => {
+  if (pageText.includes('payment successful') || pageText.includes('pagamento riuscito') || pageText.includes('payment completed')) {
+    chrome.storage.local.get(['soundAlert', 'successAlertSent'], (result) => {
       if (result.soundAlert !== false) {
         playSound();
+      }
+      if (!result.successAlertSent) {
+        sendTelegramMessage("🎉 CIMEA Payment was SUCCESSFUL!");
+        chrome.storage.local.set({ successAlertSent: true }); // Prevent spam
       }
     });
     chrome.runtime.sendMessage({ action: 'trackEvent', event: 'payment_success' });

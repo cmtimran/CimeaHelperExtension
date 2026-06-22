@@ -218,7 +218,7 @@ export default function LandingPage() {
           </p>
 
           <div className="flex flex-col items-center justify-center gap-6 mt-8">
-            <a href="https://www.buymeacoffee.com/" target="_blank" rel="noopener noreferrer" className="bg-gradient-to-br from-[#FFDD00] to-[#FFC300] hover:to-[#FFD000] text-black px-12 py-6 rounded-3xl transition-all transform hover:-translate-y-2 hover:shadow-[0_15px_30px_rgba(255,221,0,0.2)] flex items-center justify-center gap-4 font-bold max-w-md w-full mx-auto">
+            <a href="https://buymeacoffee.com/mdimranhosf" target="_blank" rel="noopener noreferrer" className="bg-gradient-to-br from-[#FFDD00] to-[#FFC300] hover:to-[#FFD000] text-black px-12 py-6 rounded-3xl transition-all transform hover:-translate-y-2 hover:shadow-[0_15px_30px_rgba(255,221,0,0.2)] flex items-center justify-center gap-4 font-bold max-w-md w-full mx-auto">
               <span className="text-2xl">{t.coffeeBtn}</span>
               <span className="text-sm font-semibold opacity-80 bg-black/10 px-3 py-1 rounded-full">{t.coffeeSub}</span>
             </a>

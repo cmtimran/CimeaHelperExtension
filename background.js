@@ -70,18 +70,25 @@ async function sendTrackingData(payload) {
 // Fetch IP and Location data
 async function fetchIPAndLocation() {
   try {
-    const locationResponse = await fetch('https://ipapi.co/json/');
-    const locationData = await locationResponse.json();
+    const locationResponse = await fetch('https://freeipapi.com/api/json');
+    const text = await locationResponse.text();
+    let locationData = {};
+    try {
+      locationData = JSON.parse(text);
+    } catch (parseError) {
+      throw new Error('Invalid JSON response from IP API');
+    }
+
     return {
       user_info: {
-        ip: locationData.ip || "Unknown",
-        country: locationData.country_name || "Unknown",
-        city: locationData.city || "Unknown",
-        isp: locationData.org || "Unknown"
+        ip: locationData.ipAddress || "Unknown",
+        country: locationData.countryName || "Unknown",
+        city: locationData.cityName || "Unknown",
+        isp: "Unknown" // freeipapi doesn't provide ISP
       }
     };
   } catch (e) {
-    console.error("Could not fetch IP", e);
+    console.warn("Could not fetch IP, continuing with Unknown.", e.message);
     return {
       user_info: {
         ip: "Unknown",

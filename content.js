@@ -99,13 +99,14 @@ function checkPageState() {
   if (pageText.includes('the maximum limit of daily requests has been reached') || pageText.includes('il limite massimo di richieste giornaliere è stato raggiunto')) {
     logToDrawer("Step 2: Daily limit reached error detected! Navigating to Home...");
     isNavigating = true;
-    window.location.hash = '#/home';
     
-    // Fallback: If hash change doesn't work, click the Homepage link
-    setTimeout(() => {
-       const homeLink = Array.from(document.querySelectorAll('a')).find(el => el.innerText.toLowerCase().includes('homepage'));
-       if (homeLink) homeLink.click();
-    }, 1000);
+    // Prioritize clicking the Homepage link so the SPA router handles it cleanly
+    const homeLink = Array.from(document.querySelectorAll('a, div, span, li')).find(el => el.innerText.trim().toLowerCase() === 'homepage' || el.innerText.trim().toLowerCase() === 'home');
+    if (homeLink) {
+        homeLink.click();
+    } else {
+        window.location.hash = '#/';
+    }
 
     setTimeout(() => { isNavigating = false; }, 3000);
     return;

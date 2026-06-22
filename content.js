@@ -9,8 +9,19 @@ let isPaused = false; // Global pause state
 // Global Config & Sync Listeners
 // ---------------------------------------------------------
 let actionDelay = 3000;
-chrome.storage.local.get(['speed'], (res) => {
+chrome.storage.local.get(['speed', 'automationActive'], (res) => {
     if(res.speed) actionDelay = parseInt(res.speed);
+    
+    // Auto-resume if it was active
+    if (res.automationActive) {
+        isPaused = false;
+        injectDrawer();
+        setTimeout(() => {
+            logToDrawer("🔄 Automation automatically resumed after page reload.");
+        }, 500);
+    } else {
+        isPaused = true; // wait for user to start
+    }
 });
 
 chrome.storage.onChanged.addListener((changes, area) => {
@@ -26,12 +37,32 @@ chrome.storage.onChanged.addListener((changes, area) => {
     }
 });
 
-// Session Keep-Alive
+// Session Keep-Alive & Anti-Idle
 setInterval(() => {
     if (!isPaused && window.location.hostname.includes('cimea-diplome.it')) {
-        fetch('/').catch(() => {});
+        // 1. Silent fetch to keep network active
+        fetch(window.location.href).catch(() => {});
+        
+        // 2. Dispatch simulated user activity to reset frontend idle timers
+        document.dispatchEvent(new MouseEvent('mousemove', { bubbles: true }));
+        document.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'Shift' }));
+        document.dispatchEvent(new Event('scroll', { bubbles: true }));
+        
+        // 3. Auto-click "Extend Session" or "Stay Logged In" modals if they appear
+        const modalBtns = Array.from(document.querySelectorAll('button')).filter(btn => {
+            const txt = btn.innerText ? btn.innerText.toLowerCase() : '';
+            return txt.includes('stay logged in') || txt.includes('extend') || txt.includes('prolunga') || txt.includes('mantieni') || txt.includes('continue');
+        });
+        
+        for (let btn of modalBtns) {
+            if (btn.offsetParent !== null && !btn.disabled) { // if visible
+                btn.click();
+                if (typeof logToDrawer === 'function') logToDrawer("🔄 Auto-extended session from modal popup.");
+                break;
+            }
+        }
     }
-}, 300000); // 5 minutes
+}, 30000); // Check every 30 seconds
 
 // ---------------------------------------------------------
 // 1. Drawer UI Logic
@@ -92,6 +123,7 @@ function injectDrawer() {
   // Pause button logic
   document.getElementById('cimea-pause-btn').addEventListener('click', (e) => {
     isPaused = !isPaused;
+    chrome.storage.local.set({ automationActive: !isPaused });
     const btn = e.target;
     const indicator = document.getElementById('cimea-status-indicator');
     if (isPaused) {
@@ -143,6 +175,9 @@ function logToDrawer(message) {
 // ---------------------------------------------------------
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'startAutomation') {
+    isPaused = false;
+    chrome.storage.local.set({ automationActive: true });
+    injectDrawer();
     logToDrawer("Automation started by user.");
     chrome.runtime.sendMessage({ action: 'trackEvent', event: 'automation_started', data: { url: window.location.href } });
     
@@ -396,7 +431,7 @@ function checkPageState() {
       }
       if (!result.successAlertSent) {
         sendTelegramMessage("🎉 CIMEA Payment was SUCCESSFUL!");
-        chrome.storage.local.set({ successAlertSent: true, paymentSucceeded: true }); // Prevent spam & pause others
+        chrome.storage.local.set({ successAlertSent: true, paymentSucceeded: true, automationActive: false }); // Prevent spam & pause others
       }
     });
     chrome.runtime.sendMessage({ action: 'trackEvent', event: 'payment_success' });

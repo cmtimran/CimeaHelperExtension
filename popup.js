@@ -116,6 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // Communicate with content script
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         if (tabs[0]) {
+          chrome.storage.local.set({ automationActive: true });
           chrome.tabs.sendMessage(tabs[0].id, {
             action: 'startAutomation',
             settings: {

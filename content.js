@@ -239,35 +239,84 @@ function checkPageState() {
   // CONTEXT 2: HOMEPAGE (DASHBOARD)
   // ----------------------------------------------------------------------
   if (currentHash === '#/' || currentHash.includes('#/home') || pageText.includes('my requests')) {
-    const draftBadge = Array.from(document.querySelectorAll('*')).find(el => 
-        el.innerText.trim().toLowerCase() === 'draft' || el.innerText.trim().toLowerCase() === 'bozza'
-    );
-    
+    // 1. Find all elements that contain the text 'draft' or 'bozza'
+    const allDraftElements = Array.from(document.querySelectorAll('*')).filter(el => {
+        if (!el.innerText) return false;
+        const text = el.innerText.trim().toLowerCase();
+        return text === 'draft' || text === 'bozza';
+    });
+
+    // 2. Sort by depth descending (deepest first)
+    allDraftElements.sort((a, b) => {
+        let dA = 0, currA = a; while(currA) { dA++; currA = currA.parentElement; }
+        let dB = 0, currB = b; while(currB) { dB++; currB = currB.parentElement; }
+        return dB - dA;
+    });
+
+    let draftBadge = allDraftElements.length > 0 ? allDraftElements[0] : null;
+
+    if (!draftBadge) {
+        // Fallback: Just look for any element containing the text, but try to find a small one
+        const backupDrafts = Array.from(document.querySelectorAll('span, p, div, button, a')).filter(el => {
+             const text = el.innerText ? el.innerText.trim().toLowerCase() : '';
+             return (text.includes('draft') || text.includes('bozza')) && text.length < 20; // Short text
+        });
+        if (backupDrafts.length > 0) {
+             backupDrafts.sort((a, b) => {
+                 let dA = 0, currA = a; while(currA) { dA++; currA = currA.parentElement; }
+                 let dB = 0, currB = b; while(currB) { dB++; currB = currB.parentElement; }
+                 return dB - dA;
+             });
+             draftBadge = backupDrafts[0];
+        }
+    }
+
     if (draftBadge && draftBadge.offsetParent !== null) {
-        const row = draftBadge.closest('tr') || draftBadge.closest('div.row') || draftBadge.parentElement.parentElement;
-        if (row) {
-            const btns = row.querySelectorAll('button, [role="button"]');
-            let actionBtn = Array.from(btns).find(btn => btn.innerText.includes('...'));
-            if (!actionBtn && btns.length > 0) actionBtn = btns[btns.length - 1];
+        let actionBtn = null;
+        let completeOption = null;
 
-            const completeOption = Array.from(document.querySelectorAll('button, a, div, span, li')).find(el => 
-                (el.innerText.toLowerCase().includes('complete') || el.innerText.toLowerCase().includes('completa')) && 
-                el.offsetParent !== null && !el.innerText.toLowerCase().includes('completed')
-            );
+        // Traverse up to 8 levels to find the card container
+        let curr = draftBadge;
+        for (let i = 0; i < 8; i++) {
+            if (!curr) break;
 
-            if (completeOption) {
-                logToDrawer("Step 4: Clicking 'Complete'...");
-                isNavigating = true;
-                completeOption.click();
-                setTimeout(() => { isNavigating = false; }, actionDelay);
-                return;
-            } else if (actionBtn && actionBtn.offsetParent !== null) {
-                logToDrawer("Step 3: On Homepage. Opening Draft menu...");
-                isNavigating = true;
-                actionBtn.click();
-                setTimeout(() => { isNavigating = false; }, 1500);
-                return;
+            // Check if dropdown is already open
+            const dropdownItems = Array.from(curr.querySelectorAll('button, a, div, span, li'));
+            completeOption = dropdownItems.find(el => {
+                const text = el.innerText ? el.innerText.toLowerCase().trim() : '';
+                return (text === 'complete' || text === 'completa' || text.includes('complete ')) && 
+                       el.offsetParent !== null && 
+                       !text.includes('completed');
+            });
+            if (completeOption) break;
+
+            // Check for the three dots button
+            const allBtns = Array.from(curr.querySelectorAll('button, [role="button"], a')).filter(b => b !== draftBadge && !draftBadge.contains(b) && !b.contains(draftBadge) && b.offsetParent !== null);
+            
+            let dotsBtn = allBtns.find(btn => btn.innerText && btn.innerText.includes('...'));
+            if (dotsBtn) {
+                actionBtn = dotsBtn;
+                if (i >= 2) break; // Found it within a reasonable container
+            } else if (!actionBtn && allBtns.length > 0) {
+                // Keep track of the last button found in the container (usually the action menu)
+                actionBtn = allBtns[allBtns.length - 1];
             }
+            
+            curr = curr.parentElement;
+        }
+
+        if (completeOption) {
+            logToDrawer("Step 4: Clicking 'Complete'...");
+            isNavigating = true;
+            completeOption.click();
+            setTimeout(() => { isNavigating = false; }, actionDelay);
+            return;
+        } else if (actionBtn) {
+            logToDrawer("Step 3: On Homepage. Opening Draft menu...");
+            isNavigating = true;
+            actionBtn.click();
+            setTimeout(() => { isNavigating = false; }, 1500);
+            return;
         }
     }
   }

@@ -311,23 +311,21 @@ function checkPageState() {
         let completeOption = null;
 
         // 1. Check globally if the 'Complete' dropdown is already open anywhere on the page (handles Portals)
-        completeOption = Array.from(document.querySelectorAll('button, [role="menuitem"], a, li, span')).find(el => {
+        const possibleCompletes = Array.from(document.querySelectorAll('button, a, div, span, li, p')).filter(el => {
             const text = el.innerText ? el.innerText.toLowerCase().trim() : '';
-            return (text === 'complete' || text === 'completa' || text === 'complete request' || text.includes('complete ')) && 
+            return (text === 'complete' || text === 'completa' || text === 'complete request' || text === 'completa richiesta') && 
                    el.offsetParent !== null && 
-                   !text.includes('completed') &&
-                   el.children.length === 0; // leaf node
+                   text.length < 30; // Short text
         });
-        
-        if (!completeOption) {
-            completeOption = Array.from(document.querySelectorAll('button, [role="menuitem"], a, li')).find(el => {
-                const text = el.innerText ? el.innerText.toLowerCase().trim() : '';
-                return (text === 'complete' || text === 'completa' || text === 'complete request' || text.includes('complete ')) && 
-                       el.offsetParent !== null && 
-                       !text.includes('completed') &&
-                       text.length < 25; // short text
-            });
-        }
+
+        // Sort by depth descending (deepest first) to avoid clicking wrapper divs
+        possibleCompletes.sort((a, b) => {
+            let dA = 0, currA = a; while(currA) { dA++; currA = currA.parentElement; }
+            let dB = 0, currB = b; while(currB) { dB++; currB = currB.parentElement; }
+            return dB - dA;
+        });
+
+        completeOption = possibleCompletes.length > 0 ? possibleCompletes[0] : null;
 
         // Traverse up to 8 levels to find the card container for the ... button
         let curr = draftBadge;

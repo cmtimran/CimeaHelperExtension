@@ -260,3 +260,8 @@ input:checked + .slider:before {
   from { opacity: 0; }
   to { opacity: 1; }
 }
+
+.donation-box { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); padding: 12px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; gap: 8px; margin-top: 10px; }
+.donation-text { font-size: 13px; color: #a1a1aa; margin: 0; }
+.donate-btn { background: #f43f5e; color: #fff; text-decoration: none; font-size: 13px; font-weight: 600; padding: 8px 16px; border-radius: 8px; transition: all 0.2s; width: 100%; text-align: center; }
+.donate-btn:hover { background: #e11d48; transform: translateY(-1px); }

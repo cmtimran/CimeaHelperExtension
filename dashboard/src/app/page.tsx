@@ -229,7 +229,7 @@ export default function LandingPage() {
 
       {/* Footer */}
       <footer className="py-10 text-center border-t border-slate-800/80 text-slate-500 bg-slate-950">
-        <p className="font-medium text-sm">© 2026 CIMEA Payment Helper V2. Developed for Automation.</p>
+        <p className="font-medium text-sm">© 2026 CIMEA Helper. Developed for Automation.</p>
       </footer>
       
       {/* Add Floating Keyframes dynamically */}

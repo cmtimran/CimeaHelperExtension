@@ -1,5 +1,5 @@
 // Content script runs on the actual web pages
-console.log("CIMEA Payment Helper Content Script Loaded.");
+console.log("CIMEA Helper Content Script Loaded.");
 
 let autoRetryInterval = null;
 

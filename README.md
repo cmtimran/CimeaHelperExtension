@@ -1,9 +1,9 @@
-# CIMEA Payment Helper V2 🚀
+# CIMEA Helper 🚀
 
 [![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](https://github.com/cmtimran/CimeaHelperExtension)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/cmtimran/CimeaHelperExtension)
 
-The **CIMEA Payment Helper V2** is a robust Google Chrome Extension paired with a powerful Next.js Admin Dashboard designed to automate form filling, page navigation, and payment retries on the CIMEA portal.
+The **CIMEA Helper** is a robust Google Chrome Extension paired with a powerful Next.js Admin Dashboard designed to automate form filling, page navigation, and payment retries on the CIMEA portal.
 
 *CIMEA পেমেন্টের ঝামেলা এখন শেষ! আমাদের এই এক্সটেনশনটি স্বয়ংক্রিয়ভাবে আপনার পেমেন্ট এবং ফর্ম পূরণ সম্পূর্ণ করবে।*
 

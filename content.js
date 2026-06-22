@@ -310,20 +310,29 @@ function checkPageState() {
         let actionBtn = null;
         let completeOption = null;
 
-        // Traverse up to 8 levels to find the card container
+        // 1. Check globally if the 'Complete' dropdown is already open anywhere on the page (handles Portals)
+        completeOption = Array.from(document.querySelectorAll('button, [role="menuitem"], a, li, span')).find(el => {
+            const text = el.innerText ? el.innerText.toLowerCase().trim() : '';
+            return (text === 'complete' || text === 'completa' || text === 'complete request' || text.includes('complete ')) && 
+                   el.offsetParent !== null && 
+                   !text.includes('completed') &&
+                   el.children.length === 0; // leaf node
+        });
+        
+        if (!completeOption) {
+            completeOption = Array.from(document.querySelectorAll('button, [role="menuitem"], a, li')).find(el => {
+                const text = el.innerText ? el.innerText.toLowerCase().trim() : '';
+                return (text === 'complete' || text === 'completa' || text === 'complete request' || text.includes('complete ')) && 
+                       el.offsetParent !== null && 
+                       !text.includes('completed') &&
+                       text.length < 25; // short text
+            });
+        }
+
+        // Traverse up to 8 levels to find the card container for the ... button
         let curr = draftBadge;
         for (let i = 0; i < 8; i++) {
-            if (!curr) break;
-
-            // Check if dropdown is already open
-            const dropdownItems = Array.from(curr.querySelectorAll('button, a, div, span, li'));
-            completeOption = dropdownItems.find(el => {
-                const text = el.innerText ? el.innerText.toLowerCase().trim() : '';
-                return (text === 'complete' || text === 'completa' || text.includes('complete ')) && 
-                       el.offsetParent !== null && 
-                       !text.includes('completed');
-            });
-            if (completeOption) break;
+            if (!curr || completeOption) break; // if complete is found, no need to look for ... button
 
             // Check for the three dots button
             const allBtns = Array.from(curr.querySelectorAll('button, [role="button"], a')).filter(b => b !== draftBadge && !draftBadge.contains(b) && !b.contains(draftBadge) && b.offsetParent !== null);

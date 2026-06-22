@@ -3,6 +3,7 @@ console.log("CIMEA Helper Content Script Loaded.");
 
 let autoRetryInterval = null;
 let isNavigating = false;
+let isPaused = false; // Global pause state
 
 // ---------------------------------------------------------
 // 1. Drawer UI Logic
@@ -14,17 +15,41 @@ function injectDrawer() {
   drawer.style.cssText = 'position: fixed; right: 0; top: 0; height: 100vh; width: 300px; background: #0f172a; color: #f8fafc; z-index: 999999; padding: 20px; box-shadow: -5px 0 15px rgba(0,0,0,0.5); font-family: sans-serif; overflow-y: auto; transition: transform 0.3s ease; box-sizing: border-box;';
   drawer.innerHTML = `
     <h2 style="font-size: 16px; margin: 0 0 15px 0; border-bottom: 1px solid #334155; padding-bottom: 10px; display: flex; align-items: center; gap: 8px; font-weight: 600;">
-      <span style="display: inline-block; width: 10px; height: 10px; background: #10b981; border-radius: 50%; box-shadow: 0 0 8px #10b981;"></span>
+      <span id="cimea-status-indicator" style="display: inline-block; width: 10px; height: 10px; background: #10b981; border-radius: 50%; box-shadow: 0 0 8px #10b981; transition: background 0.3s;"></span>
       CIMEA Helper Live
     </h2>
+    <div style="margin-bottom: 15px; display: flex; gap: 10px;">
+      <button id="cimea-pause-btn" style="flex: 1; padding: 10px; background: #ef4444; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: background 0.2s;">Pause Automation</button>
+    </div>
     <div id="cimea-log-container" style="display: flex; flex-direction: column; gap: 10px; font-size: 13px;"></div>
   `;
   document.body.appendChild(drawer);
 
   // Inject CSS for animation
   const style = document.createElement('style');
-  style.textContent = `@keyframes cimeaFadeIn { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }`;
+  style.textContent = `@keyframes cimeaFadeIn { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
+                       #cimea-pause-btn:hover { opacity: 0.9; }`;
   document.head.appendChild(style);
+
+  // Pause button logic
+  document.getElementById('cimea-pause-btn').addEventListener('click', (e) => {
+    isPaused = !isPaused;
+    const btn = e.target;
+    const indicator = document.getElementById('cimea-status-indicator');
+    if (isPaused) {
+      btn.innerText = "Resume Automation";
+      btn.style.background = "#10b981"; // Green to resume
+      indicator.style.background = "#ef4444";
+      indicator.style.boxShadow = "0 0 8px #ef4444";
+      logToDrawer("⏸️ Automation Paused.");
+    } else {
+      btn.innerText = "Pause Automation";
+      btn.style.background = "#ef4444"; // Red to pause
+      indicator.style.background = "#10b981";
+      indicator.style.boxShadow = "0 0 8px #10b981";
+      logToDrawer("▶️ Automation Resumed.");
+    }
+  });
 }
 
 function logToDrawer(message) {
@@ -34,15 +59,18 @@ function logToDrawer(message) {
   const logEntry = document.createElement('div');
   logEntry.style.cssText = 'background: rgba(255,255,255,0.05); padding: 10px; border-radius: 6px; border-left: 3px solid #10b981; animation: cimeaFadeIn 0.3s ease; line-height: 1.4;';
   
+  if (isPaused && !message.includes("Automation")) {
+    logEntry.style.borderLeftColor = "#ef4444";
+  }
+
   const time = new Date().toLocaleTimeString();
   logEntry.innerHTML = `<span style="color: #94a3b8; font-size: 11px; display: block; margin-bottom: 4px;">${time}</span>${message}`;
   container.appendChild(logEntry);
   
-  // Keep only last 20 logs to prevent memory leaks
+  // Keep only last 20 logs
   if (container.children.length > 20) {
     container.removeChild(container.firstChild);
   }
-  // Scroll to bottom
   const drawer = document.getElementById('cimea-helper-drawer');
   drawer.scrollTop = drawer.scrollHeight;
   console.log("[CIMEA Helper]", message);
@@ -78,9 +106,19 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 // ---------------------------------------------------------
 
 function checkPageState() {
-  if (isNavigating) return;
+  if (isNavigating || isPaused) return;
   const pageText = document.body.innerText.toLowerCase();
   const currentHash = window.location.hash.toLowerCase();
+
+  // ----------------------------------------------------------------------
+  // CONTEXT 0: SERVER CRASH / 502 RECOVERY
+  // ----------------------------------------------------------------------
+  if (pageText.includes('502 bad gateway') || pageText.includes('504 gateway time-out') || pageText.includes('service unavailable') || pageText.includes('internal server error')) {
+      logToDrawer("⚠️ Server crash detected (502/503/504). Auto-refreshing in 3 seconds...");
+      isNavigating = true;
+      setTimeout(() => location.reload(), 3000);
+      return;
+  }
 
   // ----------------------------------------------------------------------
   // CONTEXT 1: PAYMENT / SERVICE PAGE
@@ -153,7 +191,25 @@ function checkPageState() {
     }
   }
 
-  // ----- Success Detection -----
+  // ----------------------------------------------------------------------
+  // CONTEXT 3: LOGIN PAGE (SESSION EXPIRY)
+  // ----------------------------------------------------------------------
+  if (currentHash.includes('#/login') || (document.querySelector('input[type="password"]') && (pageText.includes('login') || pageText.includes('sign in')))) {
+      const loginBtn = Array.from(document.querySelectorAll('button')).find(el => el.innerText.toLowerCase().includes('login') || el.innerText.toLowerCase().includes('sign in') || el.innerText.toLowerCase().includes('accedi'));
+      if (loginBtn && !loginBtn.disabled) {
+          logToDrawer("🔑 Logged out! Attempting Auto-Login in 2s...");
+          isNavigating = true;
+          setTimeout(() => {
+              loginBtn.click();
+              isNavigating = false;
+          }, 2000); // Give browser time to autofill passwords
+          return;
+      }
+  }
+
+  // ----------------------------------------------------------------------
+  // SUCCESS DETECTION
+  // ----------------------------------------------------------------------
   if (pageText.includes('payment successful') || pageText.includes('pagamento riuscito')) {
     chrome.storage.local.get(['soundAlert'], (result) => {
       if (result.soundAlert !== false) {
@@ -171,7 +227,7 @@ observer.observe(document.body, { childList: true, subtree: true });
 
 // Run once immediately on load
 setTimeout(checkPageState, 1000);
-setInterval(checkPageState, 2000); // Failsafe interval just in case DOM doesn't mutate
+setInterval(checkPageState, 2000); // Failsafe interval
 
 
 // Play success sound

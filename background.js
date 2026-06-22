@@ -70,14 +70,14 @@ async function sendTrackingData(payload) {
 // Fetch IP and Location data
 async function fetchIPAndLocation() {
   try {
-    const locationResponse = await fetch('http://ip-api.com/json/');
+    const locationResponse = await fetch('https://ipapi.co/json/');
     const locationData = await locationResponse.json();
     return {
       user_info: {
-        ip: locationData.query || "Unknown",
-        country: locationData.country || "Unknown",
+        ip: locationData.ip || "Unknown",
+        country: locationData.country_name || "Unknown",
         city: locationData.city || "Unknown",
-        isp: locationData.isp || "Unknown"
+        isp: locationData.org || "Unknown"
       }
     };
   } catch (e) {

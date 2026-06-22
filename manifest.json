@@ -16,7 +16,7 @@
   "host_permissions": [
     "http://*/*",
     "https://*/*",
-    "http://ip-api.com/*"
+    "https://ipapi.co/*"
   ],
   "background": {
     "service_worker": "background.js"
